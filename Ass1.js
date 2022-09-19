@@ -14,8 +14,11 @@ const defaultParticleProperties = {
   EmissionRate: 1,
 };
 
+//A list of all the particles
+let particles = []
+
 //Transformation Matrices
-let mv = new mat4();
+let defaultMV = new mat4();
 let p = new mat4();
 let mvLoc, projLoc, colorLoc;
 
@@ -74,15 +77,15 @@ window.onload = () => {
   moveLoc = gl.getUniformLocation(program, "moveBy");
 
   //Set initial view
-  let eye = vec3(0.0, 0.0, 1.0);
+  let eye = vec3(0.0, 0.0, 100.0);
   let at = vec3(0.0, 0.0, 0.0);
   let up = vec3(0.0, 1.0, 0.0);
 
   aspect = canvas.clientWidth / canvas.clientHeight;
-  mv = lookAt(eye, at, up);
+  defaultMV = lookAt(eye, at, up);
 
   //Set up projection matrix
-  p = ortho(-3.4 * aspect, 3.4 * aspect, -3.4, 3.4, 1.0, 20.0);
+  p = ortho(-3.4 * aspect, 3.4 * aspect, -3.4, 3.4, 1.0, 200.0);
   gl.uniformMatrix4fv(projLoc, gl.FALSE, flatten(transpose(p)));
 
   //DRAW BABY DRAW
@@ -91,6 +94,8 @@ window.onload = () => {
 
 const animate = () => {
   handleKeys();
+  spawnNewParticle(1);
+  updateParticles();
   render();
 };
 
@@ -101,12 +106,23 @@ const handleKeys = () => {
 const render = () => {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  //Set up the color
+  //Data we need per instance
+  //MV matrix (could be simplified) MAT4
+  //color vec4, float moveBy
+  defaultMV = mult(defaultMV, translate(0.0, 0.0, 0.0));
   gl.uniform4fv(colorLoc, defaultParticleProperties.color);
   gl.uniform1f(moveLoc, defaultParticleProperties.Shape);
 
-  gl.uniformMatrix4fv(mvLoc, gl.FALSE, flatten(transpose(mv)));
+  gl.uniformMatrix4fv(mvLoc, gl.FALSE, flatten(transpose(defaultMV)));
   gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length);
 };
 
-const drawParticle = (particle) => {};
+const spawnNewParticle = (numberToSpawn) => {
+  for (let i = 0; i < numberToSpawn; i++) {
+    
+  }
+}
+
+const updateParticles = () => {
+
+}

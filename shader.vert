@@ -11,7 +11,10 @@ out vec4 color;
 
 void main() 
 {
-    //Move vertex to view
+    //apply the shape modifier. 
+    //Its kind of gross using a float as a bool
+    //but it works and I couldn't get 
+    //a more sensible solution (like sending a short) to work.
     vec3 pos = vPosition;
     if(vMove > 0.0) {
         pos = pos*moveBy;
