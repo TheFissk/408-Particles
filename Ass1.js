@@ -1,4 +1,4 @@
-let perf = { logPerformance: true };
+let perf = { logPerformance: false };
 perf.totalFrameTime = 0;
 perf.frameTimes = [];
 perf.lastFrame = Date.now();
@@ -126,6 +126,8 @@ const render = () => {
 
   //Buffer Layout
   //Per instance 2*4 translate 1*4 size 4*4 color 1*4 shape = 8 + 4 + 16 + 4 = 32
+
+  //rebuilding the buffer every frame sucks up performance
   const buffer = [];
   particles.forEach((p) => {
     buffer.push(...p.location);

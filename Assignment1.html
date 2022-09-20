@@ -7,11 +7,40 @@
     <script type="text/javascript" src="./Common/MVnew.js"></script>
     <script type="text/javascript" src="./Common/flatten.js"></script>
     <script type="text/javascript" src="Ass1.js"></script>
-  </head>
+    <script type="text/javascript" src="makeTable.js"></script>
 
-  <body>
+    <!-- I'm doing all my style inline for now, maybe later if it gets wild I will pull it out, but so long as its simple its here -->
+    <style>
+      div {
+        background-color: black;
+      }
+      table {
+        border-collapse: collapse;
+        color: white;
+      }
+      td,
+      th {
+        border: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body style="display: flex; margin: 0px">
     <canvas id="gl-canvas" style="width: 100%; height: 100%">
       Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
+    <div>
+      <table id="settings">
+        <tr>
+          <th colspan="2">Property</th>
+          <th colspan="2">Value</th>
+        </tr>
+        <tr>
+          <th>Beep</th>
+          <th>Beep</th>
+          <th>Beep</th>
+          <th>Beep</th>
+        </tr>
+      </table>
+    </div>
   </body>
 </html>
