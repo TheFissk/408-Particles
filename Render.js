@@ -1,7 +1,12 @@
-let perf = { logPerformance: false };
-perf.totalFrameTime = 0;
-perf.frameTimes = [];
-perf.lastFrame = Date.now();
+//performance monitoring (for dick measuring)
+let Logger = { 
+  logPerformance: false, 
+  totalFrameTime: 0,
+  frameTimes : [],
+  lastFrame : Date.now(),
+};
+
+let keyHandler = {}
 
 //Rendering context variables
 let canvas;
@@ -11,16 +16,16 @@ let program;
 
 const emmitter = {
   location: [0.0, 0.0],
-  emmissionRate: 1400,
+  emmissionRate: 1,
 };
 //The Default particle and its attributes
 const defaultParticleProperties = {
   color: [1.0, 1.0, 0.25, 1], //RGBA
   size: 100.0,
   speed: 5,
-  directionBias: [-1.0, 0.0], //no bias, going right (+X)
+  directionBias: [0.5, 0.5], //no bias, going right (+X)
   Lifetime: 60,
-  Shape: 3,
+  Shape: 1.75,
 };
 
 //A list of all the particles
@@ -44,7 +49,7 @@ let points = [
 ];
 
 //First time setup
-window.onload = () => {
+window.addEventListener('load', () => {
   //setup WebGl
   canvas = document.getElementById("gl-canvas");
   gl = canvas.getContext("webgl2", { antialias: false });
@@ -90,21 +95,21 @@ window.onload = () => {
 
   //DRAW BABY DRAW
   requestAnimationFrame(animate);
-};
+})
 
 const animate = () => {
   requestAnimationFrame(animate);
-  if (perf.logPerformance) {
-    perf.frameTimes.push(Date.now() - perf.lastFrame);
+  if (Logger.logPerformance) {
+    Logger.frameTimes.push(Date.now() - Logger.lastFrame);
     let sh = 0;
-    if (perf.frameTimes.length > 60) sh = perf.frameTimes.shift();
-    perf.totalFrameTime += perf.frameTimes[perf.frameTimes.length - 1] - sh;
+    if (Logger.frameTimes.length > 60) sh = Logger.frameTimes.shift();
+    Logger.totalFrameTime += Logger.frameTimes[Logger.frameTimes.length - 1] - sh;
     console.log(
-      `fps: ${Math.round(60000 / perf.totalFrameTime)} Particles: ${
+      `fps: ${Math.round(60000 / Logger.totalFrameTime)} Particles: ${
         particles.length
       }`
     );
-    perf.lastFrame = Date.now();
+    Logger.lastFrame = Date.now();
   }
   handleKeys();
   resizeScreen();
@@ -158,13 +163,6 @@ const render = () => {
   gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, points.length, particles.length);
 };
 
-// color: [1.0, 1.0, 0.25, 1], //RGBA
-// size: 100.0,
-// speed: 5,
-// directionBias: [-1.0, 0.0], //no bias, going right (+X)
-// Lifetime: 60,
-// Shape: 3,
-
 const spawnNewParticle = (numberToSpawn) => {
   for (let i = 0; i < numberToSpawn; i++) {
     //because cloning an object should be simple zzzzz
@@ -180,10 +178,10 @@ const spawnNewParticle = (numberToSpawn) => {
     const Dsin = Math.sin(directionWiggle);
     const Dcos = Math.cos(directionWiggle);
     NP.velocity = [
-      (defaultParticleProperties.directionBias[0] * Dcos +
+      (defaultParticleProperties.directionBias[0] * Dcos -
         defaultParticleProperties.directionBias[1] * Dsin) *
         defaultParticleProperties.speed,
-      (defaultParticleProperties.directionBias[0] * Dsin -
+      (defaultParticleProperties.directionBias[0] * Dsin +
         defaultParticleProperties.directionBias[1] * Dcos) *
         defaultParticleProperties.speed,
     ];

@@ -2,12 +2,13 @@
 <html>
   <head>
     <title>Assignment 1</title>
-
+<!-- If I could go back I would redo this all as modules and reduce the monolithic nature of the code -->
     <script type="text/javascript" src="./Common/initShaders2.js"></script>
     <script type="text/javascript" src="./Common/MVnew.js"></script>
     <script type="text/javascript" src="./Common/flatten.js"></script>
-    <script type="text/javascript" src="Ass1.js"></script>
-    <script type="text/javascript" src="makeTable.js"></script>
+    <script type="text/javascript" src="/KeyHandler.js"></script>
+    <script type="text/javascript" src="/Render.js"></script>
+    <script type="text/javascript" src="/makeTable.js"></script>
 
     <!-- I'm doing all my style inline for now, maybe later if it gets wild I will pull it out, but so long as its simple its here -->
     <style>
@@ -28,8 +29,8 @@
     <canvas id="gl-canvas" style="width: 100%; height: 100%">
       Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
-    <div>
-      <table id="settings">
+    <div style="border-left: 1px solid #eee">
+      <table id="tab">
         <tr>
           <th colspan="2">Property</th>
           <th colspan="2">Value</th>
