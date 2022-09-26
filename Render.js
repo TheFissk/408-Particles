@@ -6,8 +6,6 @@ let Logger = {
   lastFrame : Date.now(),
 };
 
-let keyHandler = {}
-
 //Rendering context variables
 let canvas;
 let gl;
@@ -115,15 +113,11 @@ const animate = () => {
   resizeScreen();
   updateParticles();
   spawnNewParticle(emmitter.emmissionRate);
-  updateParticles();
-  spawnNewParticle(emmitter.emmissionRate);
-  updateParticles();
-  spawnNewParticle(emmitter.emmissionRate);
+  // updateParticles();
+  // spawnNewParticle(emmitter.emmissionRate);
+  // updateParticles();
+  // spawnNewParticle(emmitter.emmissionRate);
   render();
-};
-
-const handleKeys = () => {
-  //you will do something someday, but for now you do not
 };
 
 const render = () => {
