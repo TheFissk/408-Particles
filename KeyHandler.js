@@ -16,7 +16,6 @@ const handleKeys = () => {
 
 window.addEventListener("load", () => {
   document.addEventListener("keydown", (event) => {
-    console.log(event.key);
     keys[event.key] = true;
   });
 

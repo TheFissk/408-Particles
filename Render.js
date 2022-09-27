@@ -1,6 +1,6 @@
 //performance monitoring (for dick measuring)
 let Logger = {
-  logPerformance: false,
+  logPerformance: true,
   totalFrameTime: 0,
   frameTimes: [],
   lastFrame: Date.now(),
@@ -11,6 +11,7 @@ let canvas;
 let gl;
 let instanceVBO;
 let program;
+let frame = 0;
 
 const emitter = {
   location: [0.0, 0.0],
@@ -24,6 +25,7 @@ const defaultParticleProperties = {
   directionBias: [1.0, 0.0], //no bias, going right (+X)
   Lifetime: 60,
   Shape: 1.75,
+  RotationSpeed: 0.1,
 };
 
 //A list of all the particles
@@ -92,85 +94,76 @@ const animate = () => {
   // updateParticles();
   // spawnNewParticle(emitter.emmissionRate);
   render();
+  frame++;
 };
 
 const render = () => {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  //Buffer Layout
-  //Per instance 2*4 translate 1*4 size 4*4 color 1*4 shape = 8 + 4 + 16 + 4 = 32
+  //update the age uniform
 
-  //rebuilding the buffer every frame sucks up performance
-  const buffer = [];
-  particles.forEach((p) => {
-    buffer.push(...p.location);
-    buffer.push(p.size);
-    buffer.push(...p.color);
-    buffer.push(p.Shape);
-  });
+  const frameLoc = gl.getUniformLocation(program, "frame");
+  gl.uniform1f(frameLoc, frame);
+
+  //Buffer Layout
+  //1x4 birth, 1x4 size, 1x4 shape, 1x4 rotation, 2x4 location, 2x4 translate, 4x4 color - to save Attrib Pointers, this is packed
+  // 4x4 + 4x4 + 4x4 = 48 bytes
+
   gl.bindBuffer(gl.ARRAY_BUFFER, instanceVBO);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buffer), gl.DYNAMIC_DRAW);
-  //translate
-  gl.vertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, 32, 0);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(particles), gl.DYNAMIC_DRAW);
+  //4 random variables
+  gl.vertexAttribPointer(2, 4, gl.FLOAT, gl.FALSE, 48, 0);
   gl.enableVertexAttribArray(2);
-  //size
-  gl.vertexAttribPointer(3, 1, gl.FLOAT, gl.FALSE, 32, 8);
+  //starting location and translate
+  gl.vertexAttribPointer(3, 4, gl.FLOAT, gl.FALSE, 48, 16);
   gl.enableVertexAttribArray(3);
   //color
-  gl.vertexAttribPointer(4, 4, gl.FLOAT, gl.FALSE, 32, 12);
+  gl.vertexAttribPointer(4, 4, gl.FLOAT, gl.FALSE, 48, 32);
   gl.enableVertexAttribArray(4);
-  //moveBy
-  gl.vertexAttribPointer(5, 1, gl.FLOAT, gl.FALSE, 32, 28);
-  gl.enableVertexAttribArray(5);
 
   gl.vertexAttribDivisor(2, 1);
   gl.vertexAttribDivisor(3, 1);
   gl.vertexAttribDivisor(4, 1);
-  gl.vertexAttribDivisor(5, 1);
 
   gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, points.length, particles.length);
 };
 
+//Buffer Layout
+//1x4 birth, 1x4 size, 1x4 shape, 1x4 rotation, 2x4 location, 2x4 translate, 4x4 color
+
+//Because I never want to touch a particle again until it is killed this gets complicated
 const spawnNewParticle = (numberToSpawn) => {
   for (let i = 0; i < numberToSpawn; i++) {
-    //because cloning an object should be simple zzzzz
-    let NP = {};
-    NP.color = [...defaultParticleProperties.color];
-    NP.size = defaultParticleProperties.size;
-    NP.Lifetime = defaultParticleProperties.Lifetime;
-    NP.Shape = defaultParticleProperties.Shape;
-    NP.location = [...emitter.location];
-
-    //create the movement translation
     const directionWiggle = ((Math.random() - 0.5) * Math.PI) / 3;
     const Dsin = Math.sin(directionWiggle);
     const Dcos = Math.cos(directionWiggle);
-    NP.velocity = [
+    velocityX =
       (defaultParticleProperties.directionBias[0] * Dcos -
         defaultParticleProperties.directionBias[1] * Dsin) *
-        defaultParticleProperties.speed,
+      defaultParticleProperties.speed;
+    velocityY =
       (defaultParticleProperties.directionBias[0] * Dsin +
         defaultParticleProperties.directionBias[1] * Dcos) *
-        defaultParticleProperties.speed,
-    ];
+      defaultParticleProperties.speed;
 
-    //add it to the particles list
-    particles.push(NP);
+    particles.push(
+      frame,
+      defaultParticleProperties.size,
+      defaultParticleProperties.Shape,
+      defaultParticleProperties.RotationSpeed,
+      ...emitter.location,
+      velocityX,
+      velocityY,
+      ...defaultParticleProperties.color
+    );
   }
 };
 
-//Removes expired particles, then shifts them based on their speed
+//Removes expired particles
 const updateParticles = () => {
-  if (particles.length === 0) return;
-  particles = particles.filter((p) => {
-    //remove expired particles
-    if (p.Lifetime <= 1) return false;
-
-    p.Lifetime -= 1;
-    p.location[0] += p.velocity[0];
-    p.location[1] += p.velocity[1];
-    return true;
-  });
+  while (particles[0] + defaultParticleProperties.Lifetime <= frame) {
+    particles = particles.slice(12);
+  }
 };
 
 const resizeScreen = () => {
@@ -188,11 +181,10 @@ const resizeScreen = () => {
     canvas.height = displayHeight;
 
     //reset the viewport
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
     //reset the perspective uniform
     const projLoc = gl.getUniformLocation(program, "p");
-    aspect = canvas.clientWidth / canvas.clientHeight;
     p = orthographic(
       canvas.width / 2,
       canvas.width / -2,
@@ -216,7 +208,7 @@ const printPerformance = () => {
   console.log(
     `fps: ${Math.round(60000 / Logger.totalFrameTime)} Particles: ${
       particles.length
-    }`
+    } frame: ${frame}`
   );
   Logger.lastFrame = Date.now();
 };

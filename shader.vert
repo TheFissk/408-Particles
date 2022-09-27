@@ -1,14 +1,17 @@
 #version 300 es
 
+  //Buffer Layout
+  //1x4 birth, 1x4 size, 1x4 shape, 1x4 rotation, 2x4 location, 2x4 translate, 4x4 color - to save Attrib Pointers, this is packed
+
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in float vMove;
-layout (location = 2) in vec2 translate;
-layout (location = 3) in float size;
+layout (location = 2) in vec4 ran;
+layout (location = 3) in vec4 locTrans;
 layout (location = 4) in vec4 vColor;
-layout (location = 5) in float moveBy;
 
 
 uniform mat4 p;
+uniform float frame;
 
 out vec4 color;
 
@@ -17,6 +20,8 @@ mat4 translateMatrix(vec3 t);
 
 void main() 
 {
+
+    
     //apply the shape modifier. 
     //Its kind of gross using a float as a bool
     //but it works and I couldn't get 
