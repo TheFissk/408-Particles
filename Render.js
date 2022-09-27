@@ -76,21 +76,6 @@ window.addEventListener("load", () => {
 
   instanceVBO = gl.createBuffer();
 
-  // Get addresses of shader uniform
-  let mvLoc = gl.getUniformLocation(program, "mv");
-
-  //declare the uniforms
-  let mv = new mat4();
-  let p = new mat4();
-
-  //Set initial view
-  let eye = vec3(0.0, 0.0, 10.0);
-  let at = vec3(0.0, 0.0, 0.0);
-  let up = vec3(0.0, 1.0, 0.0);
-
-  mv = lookAt(eye, at, up);
-  gl.uniformMatrix4fv(mvLoc, gl.FALSE, flatten(transpose(mv)));
-
   //DRAW BABY DRAW
   requestAnimationFrame(animate);
 });
@@ -103,9 +88,9 @@ const animate = () => {
   updateParticles();
   spawnNewParticle(emitter.emmissionRate);
   // updateParticles();
-  // spawnNewParticle(emmitter.emmissionRate);
+  // spawnNewParticle(emitter.emmissionRate);
   // updateParticles();
-  // spawnNewParticle(emmitter.emmissionRate);
+  // spawnNewParticle(emitter.emmissionRate);
   render();
 };
 
@@ -207,11 +192,19 @@ const resizeScreen = () => {
 
     //reset the perspective uniform
     const projLoc = gl.getUniformLocation(program, "p");
-    aspect = canvas.width / canvas.height;
-    p = perspective(120, aspect, 1.0, 200.0);
-    gl.uniformMatrix4fv(projLoc, gl.FALSE, flatten(transpose(p)));
+    aspect = canvas.clientWidth / canvas.clientHeight;
+    p = orthographic(
+      canvas.width / 2,
+      canvas.width / -2,
+      canvas.height / 2,
+      canvas.height / -2,
+      20,
+      -1
+    );
+    gl.uniformMatrix4fv(projLoc, gl.FALSE, p);
+    //move the emmitter to an acceptable location if the screen changes size
+    moveEmitter([0, 0]);
   }
-
   return needResize;
 };
 
@@ -226,4 +219,17 @@ const printPerformance = () => {
     }`
   );
   Logger.lastFrame = Date.now();
+};
+
+const orthographic = (r, l, t, b, f, n) => {
+  const w = r - l;
+  const h = t - b;
+  const d = f - n;
+  //prettier-ignore
+  return new Float32Array([
+    2/w,      0,        0,        0,
+    0,        2/h,      0,        0,
+    0,        0,        -2/d,     0,
+    -(r+l)/w, -(t+b)/h, -(f+n)/d, 1
+  ])
 };

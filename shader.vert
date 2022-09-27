@@ -9,9 +9,11 @@ layout (location = 5) in float moveBy;
 
 
 uniform mat4 p;
-uniform mat4 mv;
 
 out vec4 color;
+
+mat4 scaleMatrix(float s);
+mat4 translateMatrix(vec3 t);
 
 void main() 
 {
@@ -19,17 +21,37 @@ void main()
     //Its kind of gross using a float as a bool
     //but it works and I couldn't get 
     //a more sensible solution (like sending a short) to work.
-    vec3 pos = vPosition;
+    vec3 ppos = vPosition;
     if(vMove > 0.0) {
-        pos *= moveBy;
+        ppos *= moveBy;
     }
-    pos += vec3(translate,0.0);
-
-    vec4 mvPosition = mv * vec4(pos,1.0);
+    vec4 pos = vec4(ppos,1);
+    pos *= scaleMatrix(size);
+    pos *= translateMatrix(vec3(translate,0.0));
 
     //Apply projection and send out
-    gl_Position = p*mvPosition;
+    gl_Position = p*pos;
 
     //copy colour
     color = vColor;
+}
+
+mat4 scaleMatrix(float s)
+{ 
+    return mat4(
+        vec4(s,   0.0, 0.0, 0.0),
+        vec4(0.0, s,   0.0, 0.0),
+        vec4(0.0, 0.0, s,   0.0),
+        vec4(0.0, 0.0, 0.0, 1.0)
+    );
+}
+
+mat4 translateMatrix(vec3 t)
+{
+        return mat4(
+        vec4(1.0, 0.0, 0.0, t[0]),
+        vec4(0.0, 1.0, 0.0, t[1]),
+        vec4(0.0, 0.0, 1.0, t[2]),
+        vec4(0.0, 0.0, 0.0, 1.0 )
+    );
 }

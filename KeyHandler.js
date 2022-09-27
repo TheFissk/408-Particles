@@ -83,16 +83,19 @@ const changeColor = (color, amount) => {
 };
 
 const changeSize = (amount) => {
-  let s = defaultParticleProperties.size;
-  s += amount;
+  let s = defaultParticleProperties.size + amount;
   s = Clamp(s, 200, 1);
   defaultParticleProperties.size = s;
   redrawTable();
 };
 
 const moveEmitter = (amount) => {
-  emitter.location[0] += amount[0];
-  emitter.location[1] += amount[1];
+  let x = emitter.location[0] + amount[0];
+  let y = emitter.location[1] + amount[1];
+  x = Clamp(x, canvas.width / 4, canvas.width / -4);
+  y = Clamp(y, canvas.height / 4, canvas.height / -4);
+  emitter.location[0] = x;
+  emitter.location[1] = y;
   redrawTable();
 };
 
