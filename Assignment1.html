@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Assignment 1</title>
-<!-- If I could go back I would redo this all as modules and reduce the monolithic nature of the code -->
+    <!-- If I could go back I would redo this all as modules and reduce the monolithic nature of the code -->
     <script type="text/javascript" src="./Common/initShaders2.js"></script>
     <script type="text/javascript" src="./Common/MVnew.js"></script>
     <script type="text/javascript" src="./Common/flatten.js"></script>
@@ -12,21 +12,36 @@
 
     <!-- I'm doing all my style inline for now, maybe later if it gets wild I will pull it out, but so long as its simple its here -->
     <style>
+      html {
+        height: 100vh;
+      }
+      body {
+        display: flex;
+        margin: 0px;
+        min-height: 100vh;
+      }
       div {
         background-color: black;
+        color: white;
+        width: 15rem;
+      }
+      canvas {
+        width: 100%;
+        height: 100vh;
       }
       table {
         border-collapse: collapse;
-        color: white;
+        width: 100%;
       }
       td,
       th {
         border: 1px solid #eee;
+        text-align: center;
       }
     </style>
   </head>
-  <body style="display: flex; margin: 0px">
-    <canvas id="gl-canvas" style="width: 100%; height: 100%">
+  <body>
+    <canvas id="gl-canvas" width="320" height="320">
       Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
     <div style="border-left: 1px solid #eee">
@@ -35,13 +50,16 @@
           <th colspan="2">Property</th>
           <th colspan="2">Value</th>
         </tr>
-        <tr>
-          <th>Beep</th>
-          <th>Beep</th>
-          <th>Beep</th>
-          <th>Beep</th>
-        </tr>
+        <tr></tr>
       </table>
+      <h1>Known Bugs:</h1>
+      <ul>
+        <li>
+          Lifting shift before releasing the letter key will result in the key
+          not being properly disabled
+        </li>
+        <li>making the window smaller causes the canvas to resize unpredictably</li>
+      </ul>
     </div>
   </body>
 </html>

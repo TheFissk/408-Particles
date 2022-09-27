@@ -1,9 +1,9 @@
 //performance monitoring (for dick measuring)
-let Logger = { 
-  logPerformance: false, 
+let Logger = {
+  logPerformance: false,
   totalFrameTime: 0,
-  frameTimes : [],
-  lastFrame : Date.now(),
+  frameTimes: [],
+  lastFrame: Date.now(),
 };
 
 //Rendering context variables
@@ -12,7 +12,7 @@ let gl;
 let instanceVBO;
 let program;
 
-const emmitter = {
+const emitter = {
   location: [0.0, 0.0],
   emmissionRate: 1,
 };
@@ -21,7 +21,7 @@ const defaultParticleProperties = {
   color: [1.0, 1.0, 0.25, 1], //RGBA
   size: 100.0,
   speed: 5,
-  directionBias: [0.5, 0.5], //no bias, going right (+X)
+  directionBias: [1.0, 0.0], //no bias, going right (+X)
   Lifetime: 60,
   Shape: 1.75,
 };
@@ -47,7 +47,7 @@ let points = [
 ];
 
 //First time setup
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
   //setup WebGl
   canvas = document.getElementById("gl-canvas");
   gl = canvas.getContext("webgl2", { antialias: false });
@@ -93,26 +93,15 @@ window.addEventListener('load', () => {
 
   //DRAW BABY DRAW
   requestAnimationFrame(animate);
-})
+});
 
 const animate = () => {
   requestAnimationFrame(animate);
-  if (Logger.logPerformance) {
-    Logger.frameTimes.push(Date.now() - Logger.lastFrame);
-    let sh = 0;
-    if (Logger.frameTimes.length > 60) sh = Logger.frameTimes.shift();
-    Logger.totalFrameTime += Logger.frameTimes[Logger.frameTimes.length - 1] - sh;
-    console.log(
-      `fps: ${Math.round(60000 / Logger.totalFrameTime)} Particles: ${
-        particles.length
-      }`
-    );
-    Logger.lastFrame = Date.now();
-  }
+  if (Logger.logPerformance) printPerformance();
   handleKeys();
   resizeScreen();
   updateParticles();
-  spawnNewParticle(emmitter.emmissionRate);
+  spawnNewParticle(emitter.emmissionRate);
   // updateParticles();
   // spawnNewParticle(emmitter.emmissionRate);
   // updateParticles();
@@ -165,7 +154,7 @@ const spawnNewParticle = (numberToSpawn) => {
     NP.size = defaultParticleProperties.size;
     NP.Lifetime = defaultParticleProperties.Lifetime;
     NP.Shape = defaultParticleProperties.Shape;
-    NP.location = [...emmitter.location];
+    NP.location = [...emitter.location];
 
     //create the movement translation
     const directionWiggle = ((Math.random() - 0.5) * Math.PI) / 3;
@@ -214,14 +203,27 @@ const resizeScreen = () => {
     canvas.height = displayHeight;
 
     //reset the viewport
-    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     //reset the perspective uniform
     const projLoc = gl.getUniformLocation(program, "p");
-    aspect = canvas.clientWidth / canvas.clientHeight;
+    aspect = canvas.width / canvas.height;
     p = perspective(120, aspect, 1.0, 200.0);
     gl.uniformMatrix4fv(projLoc, gl.FALSE, flatten(transpose(p)));
   }
 
   return needResize;
+};
+
+const printPerformance = () => {
+  Logger.frameTimes.push(Date.now() - Logger.lastFrame);
+  let sh = 0;
+  if (Logger.frameTimes.length > 60) sh = Logger.frameTimes.shift();
+  Logger.totalFrameTime += Logger.frameTimes[Logger.frameTimes.length - 1] - sh;
+  console.log(
+    `fps: ${Math.round(60000 / Logger.totalFrameTime)} Particles: ${
+      particles.length
+    }`
+  );
+  Logger.lastFrame = Date.now();
 };
