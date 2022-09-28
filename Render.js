@@ -15,7 +15,7 @@ let frame = 0;
 
 const emitter = {
   location: [0.0, 0.0],
-  emmissionRate: 1,
+  emmissionRate: 100,
 };
 //The Default particle and its attributes
 const defaultParticleProperties = {
@@ -125,7 +125,7 @@ const render = () => {
   gl.vertexAttribDivisor(3, 1);
   gl.vertexAttribDivisor(4, 1);
 
-  gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, points.length, particles.length);
+  gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, points.length, particles.length/12);
 };
 
 //Buffer Layout
@@ -207,7 +207,7 @@ const printPerformance = () => {
   Logger.totalFrameTime += Logger.frameTimes[Logger.frameTimes.length - 1] - sh;
   console.log(
     `fps: ${Math.round(60000 / Logger.totalFrameTime)} Particles: ${
-      particles.length
+      particles.length/12
     } frame: ${frame}`
   );
   Logger.lastFrame = Date.now();
