@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Assignment 1</title>
+    <!-- If I could go back I would redo this all as modules and reduce the monolithic nature of the code -->
+    <script type="text/javascript" src="./initShaders2.js"></script>
+    <script type="text/javascript" src="./GLOBALS.js"></script>
+    <script type="text/javascript" src="./KeyHandler.js"></script>
+    <script type="text/javascript" src="./Render.js"></script>
+    <script type="text/javascript" src="./makeTable.js"></script>
+
+    <!-- I'm doing all my style inline for now, maybe later if it gets wild I will pull it out, but so long as its simple its here -->
+    <style>
+      html {
+        height: 100vh;
+        width: 100vw;
+      }
+      body {
+        display: flex;
+        margin: 0px;
+        height: 100vh;
+        width: 100vw;
+        /* because I resize my canvas element things get angry and
+         the overflow appears when it shouldn't*/
+        overflow: hidden;
+      }
+      div {
+        background-color: black;
+        color: white;
+        width: 15rem;
+      }
+      .can {
+        background-color: green;
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid #eee;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="can">
+      <canvas id="gl-canvas" width="320" height="320">
+        Oops ... your browser doesn't support the HTML5 canvas element
+      </canvas>
+    </div>
+
+    <div style="border-left: 1px solid #eee">
+      <table id="tab">
+        <tr>
+          <th colspan="2">Property</th>
+          <th colspan="2">Value</th>
+        </tr>
+        <tr></tr>
+      </table>
+      <input type="checkbox" id="rainbow">Rainbow!</input>
+      <h1>Notes:</h1>
+      <ul>
+        <li>
+          I've limitted the emission rate to 5000 particles per second. you are
+          likely to experience significant performance issues before that
+        </li>
+      </ul>
+      <h1>Known Bugs:</h1>
+      <ul>
+        <li>
+          Lifting shift before releasing the letter key will result in the key
+          not being properly disabled
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
