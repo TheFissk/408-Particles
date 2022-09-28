@@ -17,10 +17,15 @@ out vec4 color;
 
 mat4 scaleMatrix(float s);
 mat4 translateMatrix(vec3 t);
-
 void main() 
 {
+    //unpack the data
+    float age = frame - ran[0];
+    float size = ran[1];
+    float shape = ran[2];
+    float rotate = ran[3];
 
+    vec2 translate = vec2(locTrans[0], locTrans[1]) + (vec2(locTrans[2], locTrans[3]) * age);
     
     //apply the shape modifier. 
     //Its kind of gross using a float as a bool
@@ -28,7 +33,7 @@ void main()
     //a more sensible solution (like sending a short) to work.
     vec3 ppos = vPosition;
     if(vMove > 0.0) {
-        ppos *= moveBy;
+        ppos *= shape;
     }
     vec4 pos = vec4(ppos,1);
     pos *= scaleMatrix(size);

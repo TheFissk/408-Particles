@@ -35,18 +35,18 @@ let particles = [];
 let aspect;
 
 //the first 3 data points are vertex locations. the last point is whether that vertex is moved
-let points = [
-  [0.0, 0.0, 0.0, 0], //Center Center;
-  [0.0, 1.0, 0.0, 1], //Top Center;
-  [-1.0, 1.0, 0.0, 0], //Top Left;
-  [-1.0, 0.0, 0.0, 1], //Center Left;
-  [-1.0, -1.0, 0.0, 0], //Bottom Left;
-  [0.0, -1.0, 0.0, 1], //Bottom Center;
-  [1.0, -1.0, 0.0, 0], //Bottom Right;
-  [1.0, 0.0, 0.0, 1], //Center Right;
-  [1.0, 1.0, 0.0, 0], //Top Right;
-  [0.0, 1.0, 0.0, 1], //Top Center;
-];
+let points = new Float32Array([
+  0.0, 0.0, 0.0, 0, //Center Center;
+  0.0, 1.0, 0.0, 1, //Top Center;
+  -1.0, 1.0, 0.0, 0, //Top Left;
+  -1.0, 0.0, 0.0, 1, //Center Left;
+  -1.0, -1.0, 0.0, 0, //Bottom Left;
+  0.0, -1.0, 0.0, 1, //Bottom Center;
+  1.0, -1.0, 0.0, 0, //Bottom Right;
+  1.0, 0.0, 0.0, 1, //Center Right;
+  1.0, 1.0, 0.0, 0, //Top Right;
+  0.0, 1.0, 0.0, 1, //Top Center;
+]);
 
 //First time setup
 window.addEventListener("load", () => {
@@ -68,7 +68,7 @@ window.addEventListener("load", () => {
   //Load the shape into the buffer
   //const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
   //program.vPosition = gl.getAttribLocation(program, "vPosition");
   gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 16, 0);
   gl.enableVertexAttribArray(0);
