@@ -19,3 +19,5 @@ In Chrome on Mac if you have hardware acceleration enabled it doesn't render.
 
 you can view it from:
 http://www.webdev.cs.uregina.ca/~taf745/cs408/Ass1/Assignment1.html
+
+Github username: TheFissk
